@@ -3,8 +3,9 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ "bindgen-enums" ]
   pull_request:
     branches-ignore: []
 
