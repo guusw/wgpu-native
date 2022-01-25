@@ -75,7 +75,8 @@ jobs:
           - os: windows-2019
             name: Windows Stable (msvc)
             channel: stable
-            build_command: rustup default stable-msvc; cargo clippy
+            set_toolchain: rustup default stable-msvc
+            build_command: cargo clippy
             make_command: make lib-native
             install_deps_command: |
               # choco exit with code 1 after successful install
@@ -84,7 +85,8 @@ jobs:
           - os: windows-2019
             name: Windows Stable (gnu)
             channel: stable
-            build_command: rustup default stable-gnu; cargo clippy
+            set_toolchain: rustup default stable-gnu
+            build_command: cargo clippy
             make_command: make lib-native
             install_deps_command: |
               # choco exit with code 1 after successful install
@@ -120,6 +122,8 @@ jobs:
         with:
           toolchain: nightly
           override: true
+      - name: Set toolchain
+        run: ${{ matrix.set_toolchain }}
       - name: Install clippy
         if: contains(matrix.build_command, 'clippy')
         run: rustup component add clippy
