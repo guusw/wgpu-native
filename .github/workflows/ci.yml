@@ -72,7 +72,7 @@ jobs:
               rm -rf $GLFW_DIR
             make_command: make VERBOSE=1
           - os: windows-2019
-            name: Windows Stable
+            name: Windows Stable (msvc)
             channel: stable
             build_command: rustup default stable-msvc; cargo clippy
             make_command: make lib-native
@@ -81,7 +81,16 @@ jobs:
               choco install -y --force llvm | exit 0
               echo "LIBCLANG_PATH=C:\Program Files\LLVM\lib" >> $GITHUB_ENV
           - os: windows-2019
-            name: Windows Nightly
+            name: Windows Stable (gnu)
+            channel: stable
+            build_command: rustup default stable-gnu; cargo clippy
+            make_command: make lib-native
+            install_deps_command: |
+              # choco exit with code 1 after successful install
+              choco install -y --force llvm | exit 0
+              echo "LIBCLANG_PATH=C:\Program Files\LLVM\lib" >> $GITHUB_ENV
+          - os: windows-2019
+            name: Windows Nightly (msvc)
             channel: nightly
             #build_command: rustup default nightly-msvc; cargo check
             # speed up this build a little
