@@ -91,7 +91,7 @@ fn main() {
             if let Ok(sysroot) = env::var("SYSROOT").as_ref() {
                 println!("Using android sysroot {}", sysroot.as_str());
                 builder = builder
-                    .clang_arg(format!("-isysroot {}", sysroot));
+                    .clang_arg(format!("-isysroot {}", sysroot.as_str()));
             }
         }
         _ => ()
