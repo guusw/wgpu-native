@@ -75,16 +75,26 @@ fn main() {
         );
 
     // See https://github.com/rust-lang/rust-bindgen/issues/1780
-    if let Ok("ios") = env::var("CARGO_CFG_TARGET_OS").as_ref().map(|x| &**x) {
-        let output = Command::new("xcrun")
-            .args(&["--sdk", "iphoneos", "--show-sdk-path"])
-            .output()
-            .expect("xcrun failed")
-            .stdout;
-        let sdk = std::str::from_utf8(&output).expect("invalid output from `xcrun`");
-        builder = builder
-            .clang_arg(format!("-isysroot {}", sdk))
-            .clang_arg("--target=arm64-apple-ios");
+    match env::var("CARGO_CFG_TARGET_OS").as_ref().map(|x| &**x) {
+        Ok("ios") => {
+            let output = Command::new("xcrun")
+                .args(&["--sdk", "iphoneos", "--show-sdk-path"])
+                .output()
+                .expect("xcrun failed")
+                .stdout;
+            let sdk = std::str::from_utf8(&output).expect("invalid output from `xcrun`");
+            builder = builder
+                .clang_arg(format!("-isysroot {}", sdk))
+                .clang_arg("--target=arm64-apple-ios");
+        }
+        Ok("android") => {
+            if let Ok(sysroot) = env::var("SYSROOT").as_ref() {
+                println!("Using android sysroot {}", sysroot.as_str());
+                builder = builder
+                    .clang_arg(format!("-isysroot {}", sysroot));
+            }
+        }
+        _ => ()
     }
 
     let bindings = builder.generate().expect("Unable to generate bindings");
