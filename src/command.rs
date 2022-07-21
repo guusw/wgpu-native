@@ -168,16 +168,26 @@ pub unsafe extern "C" fn wgpuCommandEncoderBeginRenderPass(
 pub unsafe extern "C" fn wgpuComputePassEncoderEnd(pass: id::ComputePassEncoderId) {
     let pass = Box::from_raw(pass);
     let encoder_id = pass.parent_id();
-    gfx_select!(encoder_id => GLOBAL.command_encoder_run_compute_pass(encoder_id, &pass))
-        .expect("Unable to end compute pass");
+    let error =
+        gfx_select!(encoder_id => GLOBAL.command_encoder_run_compute_pass(encoder_id, &pass));
+    if let Err(error) = error {
+        // TODO figure out what device the render pipeline belongs to and call
+        // handle_device_error()
+        log::error!("Unable to end compute pass: {:?}", error);
+    }
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn wgpuRenderPassEncoderEnd(pass: id::RenderPassEncoderId) {
     let pass = Box::from_raw(pass);
     let encoder_id = pass.parent_id();
-    gfx_select!(encoder_id => GLOBAL.command_encoder_run_render_pass(encoder_id, &pass))
-        .expect("Unable to end render pass");
+    let error =
+        gfx_select!(encoder_id => GLOBAL.command_encoder_run_render_pass(encoder_id, &pass));
+    if let Err(error) = error {
+        // TODO figure out what device the render pipeline belongs to and call
+        // handle_device_error()
+        log::error!("Unable to end render pass: {:?}", error);
+    }
 }
 
 // TODO: Move these out of wgc
