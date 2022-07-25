@@ -199,6 +199,8 @@ pub unsafe extern "C" fn wgpuDeviceCreateShaderModule(
     };
     let (id, error) = gfx_select!(device => GLOBAL.device_create_shader_module(device, &desc, source, PhantomData));
     if let Some(error) = error {
+        let label_str = label.as_cow().unwrap_or(Cow::Owned("unknown".to_string()));
+        println!("WGPU: Failed to compile {} {}", label_str, error);
         handle_device_error(device, &error);
         None
     } else {
